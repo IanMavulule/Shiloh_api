@@ -46,13 +46,9 @@ class ParticipanteController extends Controller
     {
         try {
 
-            $participante = $this->participanteService
-                ->createParticipante($request->validated());
+            $participante = $this->participanteService->createParticipante($request->validated());
 
-            $viagem = $this->viagemService
-                ->getViagemById($participante->id_viagem);
-
-            $viagem->increment('nr_participantes');
+            
 
             return $this->success([
                 'participante' => $participante,

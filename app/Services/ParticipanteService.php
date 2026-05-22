@@ -5,21 +5,34 @@ namespace App\Services;
 use App\Models\Participante;
 use App\Models\Carro;
 use Illuminate\Support\Facades\DB;
+use App\Services\ViagemService;
+
 
 class ParticipanteService 
 {
+    protected $viagemService;
+
+    public function __construct(ViagemService $viagemService)
+    {
+        $this->viagemService = $viagemService;
+    }
+
     public function createParticipante(array $data)
-{
-    return DB::transaction(function () use ($data) {
+    {
+        return DB::transaction(function () use ($data) {
 
-        $carroId = $this->getOrCreateCarro(1);
+            $carroId = $this->getOrCreateCarro(1);
+            $participante = Participante::create(array_merge($data, [
+                'id_carro' => $carroId
+            ]));
 
-        return Participante::create(array_merge($data, [
-            'id_viagem' => 1,
-            'id_carro' => $carroId
-        ]));
-    });
-}
+            $viagem = $this->viagemService->getViagemById(1);
+
+            $viagem->increment('nr_participantes');
+
+            return $participante;
+        });
+    }
 
     public function getOrCreateCarro($viagemId)
     {
@@ -29,9 +42,16 @@ class ParticipanteService
             ->orderBy('id')
             ->first();
 
+
+
         if ($carro) {
             return $carro->id;
         }
+
+
+        $viagem = $this->viagemService->getViagemById(1);
+
+        $viagem->increment('nr_viaturas');
 
         return Carro::create([
             'id_viagem' => $viagemId

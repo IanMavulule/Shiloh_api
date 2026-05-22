@@ -30,8 +30,7 @@ class StoreParticipante extends FormRequest
             'turma' => 'sometimes|string',
             'bairro' => 'sometimes|string',
             'nr_celular01' => 'sometimes|numeric',
-            'nr_celular02' => 'sometimes|numeric',
-            'id_carro' => 'sometimes|exists:viagems,id',
+            'nr_celular02' => 'sometimes|numeric'
         ];
     }
 }
