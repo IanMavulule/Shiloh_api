@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Participante\StoreParticipante;
 use App\Http\Requests\Participante\UpdateParticipante;
 use Illuminate\Support\Facades\Log;
+use App\Models\PagamentoPendente;
 
 class ParticipanteController extends Controller
 {
@@ -64,35 +65,49 @@ class ParticipanteController extends Controller
         /**
      * Show the form for creating a new resource.
      */
-  public function storeValidated(Request $request)
-{
-    Log::info('CALLBACK COMPLETO', $request->all());
-    
-    try {
-        $metadata = $request->input('metadata');
-        
-        Log::info('METADATA', ['metadata' => $metadata, 'tipo' => gettype($metadata)]);
+    public function storeValidated(Request $request)
+    {
+        Log::info('CALLBACK RECEBIDO', $request->all());
 
-        if (is_string($metadata)) {
-            $metadata = json_decode($metadata, true);
+        try {
+            $event = $request->input('event');
+
+            if ($event !== 'payment.success') {
+                Log::info('Evento ignorado', ['event' => $event]);
+                return response()->json(['message' => 'Ignorado'], 200);
+            }
+
+            $reference = $request->input('data.reference');
+            Log::info('Reference recebida', ['reference' => $reference]);
+
+            $pendente = PagamentoPendente::where('reference', $reference)->first();
+
+            if (!$pendente) {
+                Log::error('Reference não encontrada', ['reference' => $reference]);
+                return response()->json(['message' => 'Reference não encontrada'], 200);
+            }
+
+            $metadata = $pendente->metadata; // já é array pelo cast
+
+            Log::info('Metadata encontrado', ['metadata' => $metadata]);
+
+            $participante = $this->participanteService->createParticipante($metadata);
+
+            // Apagar após usar
+            $pendente->delete();
+
+            Log::info('Participante criado com sucesso', ['id' => $participante->id]);
+
+            return $this->success([
+                'participante' => $participante,
+                'mensagem'     => 'Mais um participante inscrito'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('ERRO CALLBACK', ['erro' => $e->getMessage()]);
+            return $this->error($e->getMessage());
         }
-
-        Log::info('ANTES DE CRIAR', ['metadata' => $metadata]);
-
-        $participante = $this->participanteService->createParticipante($metadata);
-
-        Log::info('PARTICIPANTE CRIADO', ['participante' => $participante]);
-
-        return $this->success([
-            'participante' => $participante,
-            'mensagem' => 'Mais um participante inscrito'
-        ]);
-
-    } catch (\Exception $e) {
-        Log::error('ERRO CALLBACK', ['erro' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-        return $this->error($e->getMessage());
     }
-}
 
     /**
      * Display the specified resource.
