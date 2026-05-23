@@ -31,7 +31,7 @@ class PagamentoController extends Controller
             "reference" => $ref,
             "description" => "Inscrição Shiloh",
             "return_url" => "https://artemaputo.com/reg1",
-            "callback_url" => "https://api.artemaputo.com/api/payments/webhook/paysuite",
+            "callback_url" => "https://api.tribo-juda.online/adicionar-participante",
             "metadata" => $metadata, 
         ];
 
