@@ -64,7 +64,7 @@ class ParticipanteController extends Controller
         /**
      * Show the form for creating a new resource.
      */
-    public function storeValidated(Request $request)
+  public function storeValidated(Request $request)
 {
     Log::info('CALLBACK COMPLETO', $request->all());
     
@@ -77,7 +77,11 @@ class ParticipanteController extends Controller
             $metadata = json_decode($metadata, true);
         }
 
+        Log::info('ANTES DE CRIAR', ['metadata' => $metadata]);
+
         $participante = $this->participanteService->createParticipante($metadata);
+
+        Log::info('PARTICIPANTE CRIADO', ['participante' => $participante]);
 
         return $this->success([
             'participante' => $participante,
@@ -85,7 +89,7 @@ class ParticipanteController extends Controller
         ]);
 
     } catch (\Exception $e) {
-        Log::error('ERRO CALLBACK', ['erro' => $e->getMessage()]);
+        Log::error('ERRO CALLBACK', ['erro' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
         return $this->error($e->getMessage());
     }
 }

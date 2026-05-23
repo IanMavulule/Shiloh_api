@@ -28,7 +28,7 @@ class PagamentoController extends Controller
 
         $ref = "Shiloh" . rand(100000, 999999);
         $payload = [
-            "amount" => 20,
+            "amount" => 10,
             "reference" => $ref,
             "description" => "Inscrição Shiloh",
             "return_url" => "https://artemaputo.com/reg1",
