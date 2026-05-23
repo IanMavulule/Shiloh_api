@@ -12,6 +12,7 @@ use App\Traits\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Participante\StoreParticipante;
 use App\Http\Requests\Participante\UpdateParticipante;
+use Illuminate\Support\Facades\Log;
 
 class ParticipanteController extends Controller
 {
@@ -64,23 +65,30 @@ class ParticipanteController extends Controller
      * Show the form for creating a new resource.
      */
     public function storeValidated(Request $request)
-    {
-        try {
-            $metadata = $request->input('metadata');
+{
+    Log::info('CALLBACK COMPLETO', $request->all());
+    
+    try {
+        $metadata = $request->input('metadata');
+        
+        Log::info('METADATA', ['metadata' => $metadata, 'tipo' => gettype($metadata)]);
 
-            $participante = $this->participanteService->createParticipante($metadata);
-
-            return $this->success([
-                'participante' => $participante,
-                'mensagem' => 'Mais um participante inscrito'
-            ]);
-
-        } catch (\Exception $e) {
-
-            return $this->error($e->getMessage());
-
+        if (is_string($metadata)) {
+            $metadata = json_decode($metadata, true);
         }
+
+        $participante = $this->participanteService->createParticipante($metadata);
+
+        return $this->success([
+            'participante' => $participante,
+            'mensagem' => 'Mais um participante inscrito'
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('ERRO CALLBACK', ['erro' => $e->getMessage()]);
+        return $this->error($e->getMessage());
     }
+}
 
     /**
      * Display the specified resource.

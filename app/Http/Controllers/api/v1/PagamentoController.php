@@ -24,7 +24,7 @@ class PagamentoController extends Controller
             "nr_celular01" => $Participante['nr_celular01'],
             "nr_celular02" => $Participante['nr_celular02'],
         ];
-        
+
 
         $ref = "Shiloh" . rand(100000, 999999);
         $payload = [
@@ -32,7 +32,7 @@ class PagamentoController extends Controller
             "reference" => $ref,
             "description" => "Inscrição Shiloh",
             "return_url" => "https://artemaputo.com/reg1",
-            "callback_url" => "https://api.tribo-juda.online/adicionar-participante",
+            "callback_url" => "https://api.tribo-juda.online/api/adicionar-participante",
             "metadata" => $metadata, 
         ];
 
