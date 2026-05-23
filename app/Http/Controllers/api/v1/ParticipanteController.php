@@ -48,7 +48,27 @@ class ParticipanteController extends Controller
 
             $participante = $this->participanteService->createParticipante($request->validated());
 
-            
+            return $this->success([
+                'participante' => $participante,
+                'mensagem' => 'Mais um participante inscrito'
+            ]);
+
+        } catch (\Exception $e) {
+
+            return $this->error($e->getMessage());
+
+        }
+    }
+
+        /**
+     * Show the form for creating a new resource.
+     */
+    public function storeValidated(Request $request)
+    {
+        try {
+            $metadata = $request->input('metadata');
+
+            $participante = $this->participanteService->createParticipante($metadata);
 
             return $this->success([
                 'participante' => $participante,

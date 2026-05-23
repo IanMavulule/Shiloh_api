@@ -42,8 +42,6 @@ class ParticipanteService
             ->orderBy('id')
             ->first();
 
-
-
         if ($carro) {
             return $carro->id;
         }
