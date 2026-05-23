@@ -24,6 +24,7 @@ class PagamentoController extends Controller
             "nr_celular01" => $Participante['nr_celular01'],
             "nr_celular02" => $Participante['nr_celular02'],
         ];
+        
 
         $ref = "Shiloh" . rand(100000, 999999);
         $payload = [
